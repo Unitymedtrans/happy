@@ -190,7 +190,7 @@
         <a href="#coverage">Coverage</a>
         <a href="#contact">Contact</a>
         <a class="cta-quote" href="#contact" aria-label="Get a quote">Get a Quote</a>
-        <a class="cta-nav" href="tel:908-584-8336" aria-label="Call Unity Medical 24/7">📞 Call 24/7</a>
+        <a class="cta-nav" href="tel:9085848336" aria-label="Call Unity Medical 24/7">📞 Call 24/7</a>
       </nav>
     </div>
   </header>
@@ -202,7 +202,7 @@
       <p>Ambulance, wheelchair, and stretcher services for dialysis centers, nursing homes, and private clients across New Jersey.</p>
       <div class="tagline">Compassionate care. Reliable transport. Always on time.</div>
       <div class="ctas">
-        <a class="btn primary" href="tel:908-584-8336">Call Dispatch Now</a>
+        <a class="btn primary" href="tel:9085848336">Call Dispatch Now</a>
         <a class="btn outline" href="#contact">Book Online</a>
       </div>
       <div class="hero-stats">
@@ -306,7 +306,7 @@
   <section class="section" id="testimonials" aria-labelledby="testimonials-title">
     <div class="container">
       <h2 id="testimonials-title">What Clients Say</h2>
-      <p class="lead">Real feedback from facilities and families who rely on us.</p>
+      <p class="lead">Feedback shown is representative. We can provide references upon request.</p>
       <div class="carousel" aria-label="Client testimonials">
         <div class="slide">
           <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
@@ -314,8 +314,8 @@
           <div class="person">
             <div class="avatar" aria-hidden="true"></div>
             <div>
-              <div class="meta">Michael R.</div>
-              <div class="meta">Nursing Home Director • Newark, NJ</div>
+              <div class="meta">Verified Facility Partner</div>
+              <div class="meta">Facility Partner • North NJ</div>
             </div>
           </div>
         </div>
@@ -325,8 +325,8 @@
           <div class="person">
             <div class="avatar" aria-hidden="true"></div>
             <div>
-              <div class="meta">Lisa P.</div>
-              <div class="meta">Family Member • Woodbridge, NJ</div>
+              <div class="meta">Verified Family Client</div>
+              <div class="meta">Family Client • Central NJ</div>
             </div>
           </div>
         </div>
@@ -336,8 +336,8 @@
           <div class="person">
             <div class="avatar" aria-hidden="true"></div>
             <div>
-              <div class="meta">D. Shah</div>
-              <div class="meta">Outpatient Dialysis</div>
+              <div class="meta">Verified Dialysis Partner</div>
+              <div class="meta">Dialysis Partner • NJ</div>
             </div>
           </div>
         </div>
@@ -347,8 +347,8 @@
           <div class="person">
             <div class="avatar" aria-hidden="true"></div>
             <div>
-              <div class="meta">R. Alvarez</div>
-              <div class="meta">Rehab Facility • Jersey City, NJ</div>
+              <div class="meta">Verified Rehab Partner</div>
+              <div class="meta">Rehab Partner • Hudson County</div>
             </div>
           </div>
         </div></div>
@@ -486,7 +486,7 @@
             <label style="display:flex;align-items:center;gap:8px">
               <input type="checkbox" required aria-label="Consent"> I consent to be contacted about this request.
             </label>
-            <p class="hipaa" id="hipaa-note">We protect your information and follow HIPAA best practices. Do not include sensitive medical details.</p>
+            <p class="hipaa" id="hipaa-note">We follow HIPAA-aligned best practices. Do not submit sensitive medical details through this form.</p>
           </div>
 
           <div class="wizard-nav">
@@ -498,7 +498,7 @@
         <div id="form-success" class="coverage-card" style="display:none;margin-top:12px;">
           <h3>Request received ✅</h3>
           <p>We’ll reach out shortly. If you chose “Call me back”, we’ll aim for your selected timeframe.</p>
-          <p>For urgent needs, call <a href="tel:908-584-8336">+1 (555) 123‑4567</a>.</p>
+          <p>For urgent needs, call <a href="tel:9085848336">908‑584‑8336</a>.</p>
         </div>
       </div>
       <div>
@@ -534,7 +534,7 @@
       <strong>Ready to schedule your next transport?</strong>
       <div>
         <a class="btn outline" href="#contact">Request Online</a>
-        <a class="btn primary" href="tel:908-584-8336">Call 24/7</a>
+        <a class="btn primary" href="tel:9085848336">Call 24/7</a>
       </div>
     </div>
   </div>
@@ -558,7 +558,7 @@
   </footer>
 
   <div class="sticky-bar" role="region" aria-label="Quick actions">
-    <a href="tel:908-584-8336" class="call">📞 Call</a>
+    <a href="tel:9085848336" class="call">📞 Call</a>
     <a href="#contact" class="book">Book</a>
   </div>
 
@@ -629,19 +629,51 @@
     }
     prevBtn.addEventListener('click', () => { if(step>1){ step--; renderStep(); } });
     nextBtn.addEventListener('click', () => { if(validateStep()){ step++; renderStep(); } });
-    form.addEventListener('submit', (e) => {
-      // e.preventDefault();
-      // Fake success state (replace alert)
+    form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // Final step validation
+  if(!validateStep()) return;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending...';
+
+  try{
+    const fd = new FormData(form);
+    const res = await fetch(form.action, {
+      method: 'POST',
+      body: fd,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if(res.ok){
       form.style.display = 'none';
       successPanel.style.display = 'block';
+
       // If callback timeframe chosen, show in success text
-      const cb = new FormData(form).get('callback_in');
+      const cb = fd.get('callback_in');
       if(cb){
         successPanel.insertAdjacentHTML('beforeend', `<p>Requested callback: <strong>${cb}</strong>.</p>`);
       }
-      // NOTE: replace form action with your real Formspree ID or backend endpoint
-    });
-    renderStep();
+    } else {
+      let msg = 'Submission failed. Please call dispatch.';
+      try{
+        const data = await res.json();
+        if(data && data.errors && data.errors.length){
+          msg = data.errors.map(e => e.message).join(' ');
+        }
+      }catch(_){}
+      alert(msg);
+    }
+  }catch(err){
+    alert('Network error. Please call dispatch.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send Request';
+  }
+});
+
+renderStep();
 
     // Leaflet county map with pins
     try{
